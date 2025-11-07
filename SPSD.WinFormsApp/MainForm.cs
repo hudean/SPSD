@@ -671,7 +671,7 @@ namespace SPSD.WinFormsApp
                 {
                     AnsysModel.GenerateKFile(fileName, requestData.FolderPath, _tgExePath);
                 }
-                string boxFileName = "box.k";
+                string boxFileName = "model.k";
                 LoadModel(requestData.FolderPath, boxFileName);
                 LoadModel(requestData.FolderPath, boxFileName);
 

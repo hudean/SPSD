@@ -84,7 +84,8 @@ namespace SPSD.WinFormsApp
                     writer.WriteLine("endpart;");
                     writer.WriteLine("merge");
                     writer.WriteLine("stp 0.01;");
-                    writer.WriteLine("lsdyna keyword mof  001model.k;");
+                    //writer.WriteLine("lsdyna keyword mof  001model.k;");
+                    writer.WriteLine("lsdyna keyword mof model.k;");
                     writer.WriteLine("write;");
                     writer.WriteLine("end;");
                 }
