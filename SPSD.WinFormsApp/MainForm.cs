@@ -83,6 +83,7 @@ namespace SPSD.WinFormsApp
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
+            this.TopMost = true; // 窗体置顶
             // 设置窗体的 AutoScaleMode 属性来避免缩放：
             this.AutoScaleMode = AutoScaleMode.None;
             //禁用 DPI 缩放：
@@ -265,23 +266,32 @@ namespace SPSD.WinFormsApp
             {
                 // 启动第三方应用并获取其窗口句柄
                 thirdPartyApp = Process.Start(filePath);
-                thirdPartyApp.WaitForInputIdle();
-                // 获取第三方程序的窗口句柄
-                IntPtr appHandle = thirdPartyApp.MainWindowHandle;
-                // 将其嵌入到当前WinForms窗体中
-                SetParent(appHandle, this.lsPanel.Handle);
+                var isIdle = thirdPartyApp.WaitForInputIdle();
+                //Thread.Sleep(1000); // 等待一段时间，确保窗口已经创建，有的电脑启动较慢
+                //bool isIdle = process.WaitForInputIdle(TimeSpan.FromSeconds(3)); // 等待 3 秒
+                //适用场景：通常用于等待进程完成初始化（如创建主窗口）后再与其交互，例如发送消息或操作窗口
+                //与 Thread.Sleep 的区别：WaitForInputIdle 更智能，它会检测进程的实际状态，而 Thread.Sleep 只是简单地延迟执行。
+                //返回值：方法返回 true 表示进程进入空闲状态，返回 false 表示超时或未进入空闲状态。
+                //通过 WaitForInputIdle，开发者可以更高效地与外部进程进行同步，避免不必要的延迟或资源浪费。
+                if (isIdle)
+                {
+                    // 获取第三方程序的窗口句柄
+                    IntPtr appHandle = thirdPartyApp.MainWindowHandle;
+                    // 将其嵌入到当前WinForms窗体中
+                    SetParent(appHandle, this.lsPanel.Handle);
 
-                // 显示第三方窗口
-                ShowWindow(appHandle, SW_SHOWNORMAL);
+                    // 显示第三方窗口
+                    ShowWindow(appHandle, SW_SHOWNORMAL);
 
-                // 调整第三方程序的窗口大小与位置，适应当前WinForm大小
-                // 调整第三方程序的窗口大小和位置，适应当前WinForm大小和位置
-                AdjustThirdPartyWindowSizeAndPosition(appHandle);
-                //this.Invoke(new Action(() =>
-                //    {
-                // WindowManager.SetParent(this.lsPanel.Handle, "LS-PrePost(R) 2025 R1 (v4.12.1) - 17Jan2025");
-                //}));
-                _appHandle = appHandle;
+                    // 调整第三方程序的窗口大小与位置，适应当前WinForm大小
+                    // 调整第三方程序的窗口大小和位置，适应当前WinForm大小和位置
+                    AdjustThirdPartyWindowSizeAndPosition(appHandle);
+                    //this.Invoke(new Action(() =>
+                    //    {
+                    // WindowManager.SetParent(this.lsPanel.Handle, "LS-PrePost(R) 2025 R1 (v4.12.1) - 17Jan2025");
+                    //}));
+                    _appHandle = appHandle;
+                }
             }
         }
 
